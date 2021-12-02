@@ -56,13 +56,8 @@ asmfuck_loop_begin:
     lea     rcx, _tape[rip]
     add     rcx, r9
     cmp     BYTE PTR [rcx], 0
-    je      asmfuck_loop_skipper
+    je      asmfuck_loop_skip
     push    r8
-    jmp     asmfuck_end
-asmfuck_loop_skipper:
-    mov     rdi, r8
-    call    asmfuck_loop_skip
-    mov     r8, rax
     jmp     asmfuck_end
 asmfuck_loop_end:
     lea     rcx, _tape[rip]
@@ -99,28 +94,19 @@ asmfuck_finish:
     ret
 
 asmfuck_loop_skip:
-    mov     rax, rdi
-    inc     rax
+    inc     r8
     mov     r11, 1
 asmfuck_loop_skip_begin:
-    cmp     BYTE PTR [rax], ']'
-    je      asmfuck_loop_skip_decr
-    cmp     BYTE PTR [rax], '['
-    je      asmfuck_loop_skip_incr
-    jmp     asmfuck_loop_skip_end
-asmfuck_loop_skip_incr:
-    inc     r11
-    jmp     asmfuck_loop_skip_end
-asmfuck_loop_skip_decr:
-    dec     r11
-    jmp     asmfuck_loop_skip_end
-asmfuck_loop_skip_end:
+    cmp     BYTE PTR [r8], ']'
+    sete    al
+    sub     r11, rax
+    cmp     BYTE PTR [r8], '['
+    sete    al
+    add     r11, rax
     cmp     r11, 0
-    je      asmfuck_loop_skip_finish
-    inc     rax
+    je      asmfuck_end
+    inc     r8
     jmp     asmfuck_loop_skip_begin
-asmfuck_loop_skip_finish:
-    ret
 
     .section .bss
     .lcomm _tape, 30000
