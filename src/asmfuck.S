@@ -62,12 +62,10 @@ asmfuck_loop_begin:
 asmfuck_loop_end:
     lea     rcx, _tape[rip]
     add     rcx, r9
-    pop     r10
     cmp     BYTE PTR [rcx], 0
-    je      asmfuck_loop_end_skip
-    mov     r8, r10
-    push    r8
-asmfuck_loop_end_skip:
+    cmovne  r8, QWORD PTR [rsp]
+    lea     rdx, [rsp + 8]
+    cmove   rsp, rdx
     jmp     asmfuck_end
 asmfuck_write:
     mov     rax, 1
